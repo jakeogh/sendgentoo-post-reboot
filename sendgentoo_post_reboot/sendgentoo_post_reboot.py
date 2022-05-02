@@ -133,7 +133,7 @@ install("net-fs/nfs-utils")
 
 
 machine_sig_command = sh.Command("/home/cfg/hardware/make_machine_signature_string")
-machine_sig = machine_sig_command()
+machine_sig = machine_sig_command().strip()
 
 write_line_to_file(
     line=f'MACHINE_SIG="{machine_sig}"\n',

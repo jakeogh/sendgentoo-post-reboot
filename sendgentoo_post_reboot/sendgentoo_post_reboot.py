@@ -36,8 +36,8 @@ from proxytool import add_proxy_to_enviroment
 from tmuxtool import in_tmux
 
 try:
-    arg = sys.argv[1]
-except IndexError:
+    assert sys.argv[1] == "--go"
+except (AssertionError, IndexError):
     eprint("pass --go")
     sys.exit(1)
 
@@ -99,6 +99,7 @@ install("dev-python/symlinktree", force=True)
 os.environ["LANG"] = "en_US.UTF8"  # to make click happy
 syscmd("symlinktree /home/cfg/sysskel --verbose-inf")
 syscmd("symlinktree /home/cfg/sysskel --verbose-inf --re-apply-skel /root")
+syscmd("symlinktree /home/cfg/sysskel --verbose-inf --re-apply-skel /home/user")
 
 
 syscmd("/etc/init.d/dnscrypt-proxy start")
@@ -130,7 +131,6 @@ install(
     force=True,
 )
 install("net-fs/nfs-utils")
-
 
 machine_sig_command = sh.Command("/home/cfg/hardware/make_machine_signature_string")
 machine_sig = machine_sig_command().strip()

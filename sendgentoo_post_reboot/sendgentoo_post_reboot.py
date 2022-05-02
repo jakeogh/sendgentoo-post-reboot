@@ -136,7 +136,7 @@ machine_sig_command = sh.Command("/home/cfg/hardware/make_machine_signature_stri
 machine_sig = machine_sig_command()
 
 write_line_to_file(
-    line=f'MACHINE_SIG="{machine_sig}"',
+    line=f'MACHINE_SIG="{machine_sig}"\n',
     path=Path("/etc/env.d/99machine_sig"),
     verbose=False,
     unique=True,

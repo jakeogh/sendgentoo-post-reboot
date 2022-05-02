@@ -19,160 +19,301 @@
 # pylint: disable=E1101  # no member for base
 # pylint: disable=W0201  # attribute defined outside __init__
 # pylint: disable=R0916  # Too many boolean expressions in if statement
-# pylint: disable=C0305  # Trailing newlines editor should fix automatically, pointless warning
-# pylint: disable=C0413  # TEMP isort issue [wrong-import-position] Import "from pathlib import Path" should be placed at the top of the module [C0413]
-
-# code style:
-#   no guessing on spelling: never tmp_X always temporary_X
-#   dont_makedirs -> no_makedirs
-#   no guessing on case: local vars, functions and methods are lower case. classes are ThisClass(). Globals are THIS.
-#   del vars explicitely ASAP, assumptions are buggy
-#   rely on the compiler, code verbosity and explicitness can only be overruled by benchamrks (are really compiler bugs)
-#   no tabs. code must display the same independent of viewer
-#   no recursion, recursion is undecidiable, randomly bounded, and hard to reason about
-#   each elementis the same, no special cases for the first or last elemetnt:
-#       [1, 2, 3,] not [1, 2, 3]
-#       def this(*.
-#                a: bool,
-#                b: bool,
-#               ):
-#
-#   expicit loop control is better than while (condition):
-#       while True:
-#           # continue/break explicit logic
-#   only computer generated commit messages _should_ start with a cap letter
 
 
-# TODO:
-#   https://github.com/kvesteri/validators
 import os
+import string
 import sys
-import click
-import time
-import sh
-from clicktool import click_add_options, click_global_options
-from click_auto_help import AHGroup
-from signal import signal, SIGPIPE, SIG_DFL
 from pathlib import Path
-#from with_sshfs import sshfs
-#from with_chdir import chdir
-from mptool import output
-from clicktool import tv
-from asserttool import validate_slice
+
+import sh
 from eprint import eprint
-from asserttool import ic
-from retry_on_exception import retry_on_exception
-#from collections import defaultdict
-#from prettyprinter import cpprint
-#from prettyprinter import install_extras
-#install_extras(['attrs'])
-from timetool import get_timestamp
-#from configtool import click_read_config
-#from configtool import click_write_config_entry
-
-#from asserttool import not_root
-#from pathtool import path_is_block_special
-#from pathtool import write_line_to_file
-#from getdents import files
-#from prettytable import PrettyTable
-#output_table = PrettyTable()
-
-from mptool import unmp
-#from typing import List
-#from typing import Tuple
-from typing import Sequence
-#from typing import Generator
-from typing import Iterable
-#from typing import ByteString
-from typing import Optional
-from typing import Union
-
-sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
-
-# click-command-tree
-#from click_plugins import with_plugins
-#from pkg_resources import iter_entry_points
-
-# import pdb; pdb.set_trace()
-# #set_trace(term_size=(80, 24))
-# from pudb import set_trace; set_trace(paused=False)
-
-##def log_uncaught_exceptions(ex_cls, ex, tb):
-##   eprint(''.join(traceback.format_tb(tb)))
-##   eprint('{0}: {1}'.format(ex_cls, ex))
-##
-##sys.excepthook = log_uncaught_exceptions
-
-#this should be earlier in the imports, but isort stops working
-signal(SIGPIPE, SIG_DFL)
+from pathtool import delete_file_and_recreate_empty_immutable
+from pathtool import write_line_to_file
+from portagetool import install
+from portgetool import get_latest_postgresql_version
+from proxytool import add_proxy_to_enviroment
+from tmuxtool import in_tmux
 
 
-#@with_plugins(iter_entry_points('click_command_tree'))
-#@click.group(no_args_is_help=True, cls=AHGroup)
-#@click_add_options(click_global_options)
-#@click.pass_context
-#def cli(ctx,
-#        verbose: Union[bool, int, float],
-#        verbose_inf: bool,
-#        dict_input: bool,
-#        ) -> None:
+def syscmd(cmd):
+    print(cmd, file=sys.stderr)
+    os.system(cmd)
+
+
+def touch_if_new(path: Path):
+    path = Path(path)
+    if not path.exists():  # race
+        path.touch()
+
+
+delme = Path("/delme")
+delme.mkdir(exist_ok=True)
+
+try:
+    # it's root:root, let portage recreate it
+    Path("/var/db/repos/gentoo").rmdir()
+except OSError as e:
+    if e.errno != 39:  # Directory not empty
+        raise e
+
+if not Path("/etc/portage/emerge_default_opts.conf").exists():
+    syscmd("bash -c /home/cfg/sysskel/etc/local.d/emerge_default_opts.start")
+
+# todo
+touch_if_new(Path("/etc/portage/proxy.conf"))
+touch_if_new(Path("/etc/portage/cpuflags.conf"))
+
+write_line_to_file(
+    path=Path("/etc/portage/make.conf"),
+    line="source /etc/portage/proxy.conf\n",
+    unique=True,
+    verbose=False,
+)
+
+add_proxy_to_enviroment()
+
+syscmd("emerge --sync")
+syscmd("eselect news read all")
+
+install("app-misc/tmux", verbose=False)
+install("app-admin/sudo", verbose=False)
+
+in_tmux(verbose=False)
+
+install("sys-apps/portage")
+install("net-misc/unison")
+
+install("sys-devel/libtool")
+
+install("net-dns/dnscrypt-proxy")
+syscmd("rc-update add dnscrypt-proxy default")
+
+install("dev-python/symlinktree", force=True)
+os.environ["LANG"] = "en_US.UTF8"  # to make click happy
+syscmd("symlinktree /home/cfg/sysskel --verbose-inf")
+syscmd("symlinktree /home/cfg/sysskel --verbose-inf --re-apply-skel /root")
+
+
+syscmd("/etc/init.d/dnscrypt-proxy start")
+syscmd("emaint sync -A")
+
+install("dev-util/debugedit")
+# emerge @world --newuse
+
+syscmd("test -h /root/cfg     || { ln -s /home/cfg /root/cfg             ; }")
+syscmd("test -h /root/_myapps || { ln -s /home/cfg/_myapps /root/_myapps ; }")
+syscmd("test -h /root/_repos  || { ln -s /home/cfg/_repos /root/_repos   ; }")
+
+install("app-portage/cpuid2cpuflags")
+flags = sh.cpuid2cpuflags().split(":")[1].strip()
+# echo CPU_FLAGS_X86=$(echo \"$(echo "$(cpuid2cpuflags)" | cut -d ":" -f 2 | sed 's/^[ \t]*//')\") > /etc/portage/cpuflags.conf
+write_line_to_file(
+    path=Path("/etc/portage/cpuflags.conf"),
+    unique=True,
+    line=f'CPU_FLAGS_X86="{flags}"\n',
+    verbose=False,
+)
+
+
+install("app-misc/dodo")
+install("app-misc/echocommand")
+# install('net-dns/dnsgate')
+install(
+    "app-misc/edit",
+    force=True,
+)
+install("net-fs/nfs-utils")
+
+
+machine_sig_command = sh.Command("/home/cfg/hardware/make_machine_signature_string")
+machine_sig = machine_sig_command()
+
+write_line_to_file(
+    line=f'MACHINE_SIG="{machine_sig}"',
+    path=Path("/etc/env.d/99machine_sig"),
+    verbose=False,
+    unique=True,
+)
+
+# must be done after symlink_tree so etc/skel gets populated
+if not Path("/home/user").is_dir():
+    syscmd("useradd --create-home user")
+
+syscmd("passwd -d user")
+
+install("media-libs/libmtp")  # creates plugdev group
+for x in [
+    "cdrom",
+    "cdrw",
+    "usb",
+    "audio",
+    "plugdev",
+    "video",
+    "wheel",
+]:
+    syscmd(f"gpasswd -a user {x}")
+
+syscmd("/home/cfg/setup/fix_cfg_perms")  # must happen when user exists
+
+
+delete_file_and_recreate_empty_immutable("/home/user/.lesshst")
+delete_file_and_recreate_empty_immutable("/home/user/.mupdf.history")
+delete_file_and_recreate_empty_immutable("/home/user/.pdfbox.cache")
+delete_file_and_recreate_empty_immutable("/home/user/.rediscli_history")
+delete_file_and_recreate_empty_immutable("/home/user/unison.log")
+delete_file_and_recreate_empty_immutable("/home/user/tldextract.cache")
+delete_file_and_recreate_empty_immutable("/home/user/.python_history")
+delete_file_and_recreate_empty_immutable("/home/user/Desktop")
+delete_file_and_recreate_empty_immutable("/home/user/opt")
+
+delete_file_and_recreate_empty_immutable("/root/.lesshst")
+delete_file_and_recreate_empty_immutable("/root/.mupdf.history")
+delete_file_and_recreate_empty_immutable("/root/.pdfbox.cache")
+delete_file_and_recreate_empty_immutable("/root/.rediscli_history")
+delete_file_and_recreate_empty_immutable("/root/unison.log")
+delete_file_and_recreate_empty_immutable("/root/tldextract.cache")
+delete_file_and_recreate_empty_immutable("/root/.python_history")
+delete_file_and_recreate_empty_immutable("/root/Desktop")
+delete_file_and_recreate_empty_immutable("/root/opt")
+
+
+if not Path("/home/user/cfg").exists:
+    os.symlink("/home/cfg", "/home/user/cfg")
+if not Path("/home/user/_myapps").exists:
+    os.symlink("/home/cfg/_myapps", "/home/user/_myapps")
+if not Path("/home/user/_repos").exists:
+    os.symlink("/home/cfg/_repos", "/home/user/_repos")
+
+# /home/cfg/git/configure_git_global
+
+
+##if musl is getting used, CHOST must be changed #bug, this is needs to split into it's own conf
+# if [[ "${stdlib}" == "musl" ]];
+# then
+#    echo "setting CHOST to x86_64-gentoo-linux-musl"
+#    /home/cfg/_myapps/replace-text/replace-text --match 'CHOST="x86_64-pc-linux-gnu"' --replacement 'CHOST="x86_64-gentoo-linux-musl"' /etc/portage/make.conf
+# elif [[ "${stdlib}" == "uclibc" ]];
+# then
+#    echo "setting CHOST to x86_64-gentoo-linux-uclibc"
+#    /home/cfg/_myapps/replace-text/replace-text --match 'CHOST="x86_64-pc-linux-gnu"' --replacement 'CHOST="x86_64-gentoo-linux-uclibc"' /etc/portage/make.conf
+# elif [[ "${stdlib}" == "glibc" ]];
+# then
+#    echo -n "leaving CHOST as default glibc"
+#    #grep x86_64-pc-linux-gnu /etc/portage/make.conf || { echo "x86_64-pc-linux-gnu not found in /etc/portage/make.conf, stdlib = ${stdlib}, exiting." ; exit 1 ; }
+# else
+#    echo "unknown stdlib: ${stdlib}, exiting."
+#    exit 1
+# fi
 #
-#    tty, verbose = tv(ctx=ctx,
-#                      verbose=verbose,
-#                      verbose_inf=verbose_inf,
-#                      )
+# if [[ "${stdlib}" == "musl" ]];
+# then
+#    layman -a musl || exit 1
+#    echo "source /var/lib/layman/make.conf" >> /etc/portage/make.conf # musl specific # need to switch to repos.d https://wiki.gentoo.org/wiki/Overlay
+# fi
+
+install("dev-vcs/git")  # need this for any -9999 packages (zfs)
+# emerge @preserved-rebuild # good spot to do this as a bunch of flags just changed
+# emerge @world --quiet-build=y --newuse --changed-use --usepkg=n
+
+# emerge-webrsync
+# emerge --sync
+# eselect profile list
+
+Path("/etc/local.d/export_cores.start").chmod(0o755)
+syscmd("/etc/local.d/export_cores.start")
+
+for _l in string.ascii_lowercase:
+    for _n in string.digits[1:4]:
+        Path(f"/mnt/sd{_l}{_n}").mkdir(exist_ok=True)
+
+for _p in ["loop", "samba", "dvd", "cdrom", "smb"]:
+    Path(f"/mnt/{_p}").mkdir(exist_ok=True)
+
+# if [[ "${stdlib}" == "musl" ]];
+# then
+#    install(sys-libs/argp-standalone #for musl
+#    emerge -puvNDq world
+#    emerge -puvNDq world --autounmask=n
+#    emerge -uvNDq world || exit 1 #http://distfiles.gentoo.org/experimental/amd64/musl/HOWTO
+# fi
+
+syscmd("rc-update add netmount default")
+
+install("app-portage/eix")
+syscmd("chown portage:portage /var/cache/eix")
+syscmd("eix-update")
+
+install("dev-db/postgresql")
+pg_version = get_latest_postgresql_version(verbose=False)
+syscmd(f"rc-update add postgresql-{pg_version} default")
+# syscmd(f'emerge --config dev-db/postgresql:{pg_version}')  # ok to fail if already conf
+# sudo su postgres -c "psql template1 -c 'create extension hstore;'"
+# sudo su postgres -c "psql template1 -c 'create extension ltree;'"
+install("sys-apps/sshd-configurator")
+# emerge --depclean  # unmerges partial emerges, do this after install is known good
+install("@laptopbase")  # https://dev.gentoo.org/~zmedico/portage/doc/ch02.html
+install("@wwwsurf")
+install("@webcam")
+
+install("@print")
+syscmd("gpasswd -a root lp")
+syscmd("gpasswd -a user lp")
+syscmd("gpasswd -a root lpadmin")
+syscmd("gpasswd -a user lpadmin")
 
 
-# update setup.py if changing function name
-#@click.argument("slice_syntax", type=validate_slice, nargs=1)
-@click.command()
-@click.argument("paths", type=str, nargs=-1)
-@click.argument("sysskel",
-                type=click.Path(exists=False,
-                                dir_okay=True,
-                                file_okay=False,
-                                allow_dash=False,
-                                path_type=Path,),
-                nargs=1,
-                required=True,)
-@click.option('--ipython', is_flag=True)
-@click_add_options(click_global_options)
-@click.pass_context
-def cli(ctx,
-        paths: Sequence[str],
-        sysskel: Path,
-        ipython: bool,
-        verbose: Union[bool, int, float],
-        verbose_inf: bool,
-        dict_input: bool,
-        ) -> None:
+# lspci | grep -i nvidia | grep -i vga && install(sys-firmware/nvidia-firmware #make sure this is after installing sys-apps/pciutils
+install(
+    "sys-firmware/nvidia-firmware"
+)  # make sure this is after installing sys-apps/pciutils
+syscmd(
+    'USE="-opengl -utils" emerge -v1 mesa x11-libs/libva'
+)  # temp fix the mesa circular dep
+# https://bugs.gentoo.org/602688
+# syscmd('USE="$USE -vaapi" install(@laptopxorg)
+install("@laptopxorg")
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
 
-    if paths:
-        iterator = paths
-    else:
-        iterator = unmp(valid_types=[bytes,], verbose=verbose)
-    del paths
+install("media-sound/alsa-utils")  # alsamixer
+syscmd("rc-update add alsasound boot")
+install("media-plugins/alsaequal")
+install("media-sound/alsa-tools")
 
-    index = 0
-    for index, _path in enumerate(iterator):
-        path = Path(os.fsdecode(_path)).resolve()
-        if verbose:
-            ic(index, path)
+if Path("/usr/src/linux/.git").is_dir():
+    kernel_version_command = sh.Command("git")
+    kernel_version_command = kernel_version_command.bake(
+        "-C", "/usr/src/linux", "describe", "--always", "--tag"
+    )
+    kernel_version = kernel_version_command()
+else:
+    kernel_version = Path("/usr/src/linux").resolve().name.split("linux-")[1]
 
-        with open(path, 'rb') as fh:
-            path_bytes_data = fh.read()
 
-        output(path, reason=None, dict_input=dict_input, tty=tty, verbose=verbose)
+syscmd("chown root:mail /var/spool/mail/")  # invalid group
+syscmd("chmod 03775 /var/spool/mail/")
 
-#        if ipython:
-#            import IPython; IPython.embed()
+install("@gpib")
+syscmd("gpasswd -a user gpib")
 
-if __name__ == '__main__':
-    # pylint: disable=E1120
-    cli()
+# eselect repository enable science
+# emaint sync -r science
+# emerge @gpib -pv
+# emerge @gpib
+# gpib_config
 
+install("app-editors/neovim")
+syscmd("emerge --unmerge vim")
+
+eprint("post_reboot.sh complete")
+
+
+##echo "vm.overcommit_memory=2"   >> /etc/sysctl.conf
+##echo "vm.overcommit_ratio=100"  >> /etc/sysctl.conf
+# mkdir /sys/fs/cgroup/memory/0
+##echo -e '''#!/bin/sh\necho 1 > /sys/fs/cgroup/memory/0/memory.oom_control''' > /etc/local.d/memory.oom_control.start #done in sysskel
+##chmod +x /etc/local.d/memory.oom_control.start
+
+# sudo su postgres -c "psql template1 -c 'create extension hstore;'"
+# sudo su postgres -c "psql -U postgres -c 'create extension adminpack;'" #makes pgadmin happy
+##sudo su postgres -c "psql template1 -c 'create extension uint;'"

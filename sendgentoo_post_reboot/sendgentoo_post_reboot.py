@@ -30,10 +30,16 @@ import sh
 from eprint import eprint
 from pathtool import delete_file_and_recreate_empty_immutable
 from pathtool import write_line_to_file
+from portagetool import get_latest_postgresql_version
 from portagetool import install
-from portgetool import get_latest_postgresql_version
 from proxytool import add_proxy_to_enviroment
 from tmuxtool import in_tmux
+
+try:
+    arg = sys.argv[1]
+except IndexError:
+    eprint("pass --go")
+    sys.exit(1)
 
 
 def syscmd(cmd):

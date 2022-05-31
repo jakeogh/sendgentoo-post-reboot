@@ -62,13 +62,6 @@ def touch_if_new(path: Path):
 @click.pass_context
 def cli(
     ctx,
-    stdlib: str,
-    boot_device: Path,
-    march: str,
-    root_filesystem: str,
-    newpasswd: str,
-    pinebook_overlay: bool,
-    kernel: str,
     verbose: Union[bool, int, float],
     verbose_inf: bool,
     dict_input: bool,
@@ -343,6 +336,6 @@ def cli(
     ##sudo su postgres -c "psql template1 -c 'create extension uint;'"
 
 
-if __name__ == "__main__":
-    # pylint: disable=E1120
-    cli()
+# if __name__ == "__main__":
+#    # pylint: disable=E1120
+#    cli()

@@ -58,6 +58,7 @@ def touch_if_new(path: Path):
         path.touch()
 
 
+@click.command()
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(

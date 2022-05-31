@@ -40,11 +40,11 @@ from portagetool import install
 from proxytool import add_proxy_to_enviroment
 from tmuxtool import in_tmux
 
-try:
-    assert sys.argv[1] == "--go"
-except (AssertionError, IndexError):
-    eprint("pass --go")
-    sys.exit(1)
+# try:
+#    assert sys.argv[1] == "--go"
+# except (AssertionError, IndexError):
+#    eprint("pass --go")
+#    sys.exit(1)
 
 
 def syscmd(cmd):

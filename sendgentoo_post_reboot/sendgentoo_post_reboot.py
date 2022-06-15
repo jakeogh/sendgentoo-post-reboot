@@ -176,6 +176,7 @@ def cli(
         "plugdev",
         "video",
         "wheel",
+        "dialout",
     ]:
         syscmd(f"gpasswd -a user {x}")
 

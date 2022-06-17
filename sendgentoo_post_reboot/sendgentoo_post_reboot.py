@@ -120,7 +120,6 @@ def cli(
     os.environ["LANG"] = "en_US.UTF8"  # to make click happy
     syscmd("symlinktree /home/cfg/sysskel --verbose-inf")
     syscmd("symlinktree /home/cfg/sysskel --verbose-inf --re-apply-skel /root")
-    syscmd("symlinktree /home/cfg/sysskel --verbose-inf --re-apply-skel /home/user")
 
     syscmd("/etc/init.d/dnscrypt-proxy start")
     syscmd("emaint sync -A")
@@ -161,11 +160,14 @@ def cli(
         unique=True,
     )
 
-    # must be done after symlink_tree so etc/skel gets populated
+    # must be done after symlinktree so etc/skel gets populated
     if not Path("/home/user").is_dir():
         syscmd("useradd --create-home user")
 
     syscmd("passwd -d user")
+    syscmd(
+        "symlinktree /home/cfg/sysskel --verbose-inf --re-apply-skel /home/user"
+    )  # must be done after /home/user exists
 
     install("media-libs/libmtp")  # creates plugdev group
     for x in [

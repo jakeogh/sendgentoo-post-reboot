@@ -28,6 +28,7 @@ from pathlib import Path
 
 import click
 import sh
+from click_auto_help import AHGroup
 from clicktool import click_add_options
 from clicktool import click_global_options
 from clicktool import tv
@@ -38,12 +39,6 @@ from portagetool import get_latest_postgresql_version
 from portagetool import install
 from proxytool import add_proxy_to_enviroment
 from tmuxtool import in_tmux
-
-# try:
-#    assert sys.argv[1] == "--go"
-# except (AssertionError, IndexError):
-#    eprint("pass --go")
-#    sys.exit(1)
 
 
 def syscmd(cmd):

@@ -53,10 +53,12 @@ def touch_if_new(path: Path):
 
 
 @click.command()
+@click.option("--proxy", is_flag=True)
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(
     ctx,
+    proxy: bool,
     verbose: bool | int | float,
     verbose_inf: bool,
     dict_output: bool,
@@ -81,18 +83,19 @@ def cli(
     if not Path("/etc/portage/emerge_default_opts.conf").exists():
         syscmd("bash -c /home/cfg/sysskel/etc/local.d/emerge_default_opts.start")
 
-    # todo
-    touch_if_new(Path("/etc/portage/proxy.conf"))
     touch_if_new(Path("/etc/portage/cpuflags.conf"))
+    # todo
+    if proxy:
+        touch_if_new(Path("/etc/portage/proxy.conf"))
 
-    write_line_to_file(
-        path=Path("/etc/portage/make.conf"),
-        line="source /etc/portage/proxy.conf\n",
-        unique=True,
-        verbose=False,
-    )
+        write_line_to_file(
+            path=Path("/etc/portage/make.conf"),
+            line="source /etc/portage/proxy.conf\n",
+            unique=True,
+            verbose=False,
+        )
 
-    add_proxy_to_enviroment()
+        add_proxy_to_enviroment()
 
     syscmd("emerge --sync")
     syscmd("eselect news read all")

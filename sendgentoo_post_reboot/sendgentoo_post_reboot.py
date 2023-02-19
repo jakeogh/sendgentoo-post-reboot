@@ -182,6 +182,7 @@ def cli(
 
     delete_file_and_recreate_empty_immutable("/home/user/.lesshst")
     delete_file_and_recreate_empty_immutable("/home/user/.vim-session")
+    delete_file_and_recreate_empty_immutable("/home/user/.viminfo")
     delete_file_and_recreate_empty_immutable("/home/user/.mupdf.history")
     delete_file_and_recreate_empty_immutable("/home/user/.pdfbox.cache")
     delete_file_and_recreate_empty_immutable("/home/user/.rediscli_history")

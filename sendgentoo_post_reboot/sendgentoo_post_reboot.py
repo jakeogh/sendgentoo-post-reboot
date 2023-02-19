@@ -181,6 +181,7 @@ def cli(
     syscmd("/home/cfg/setup/fix_cfg_perms")  # must happen when user exists
 
     delete_file_and_recreate_empty_immutable("/home/user/.lesshst")
+    delete_file_and_recreate_empty_immutable("/home/user/.vim-session")
     delete_file_and_recreate_empty_immutable("/home/user/.mupdf.history")
     delete_file_and_recreate_empty_immutable("/home/user/.pdfbox.cache")
     delete_file_and_recreate_empty_immutable("/home/user/.rediscli_history")

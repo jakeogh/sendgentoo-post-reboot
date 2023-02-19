@@ -28,7 +28,7 @@ from pathlib import Path
 
 import click
 import sh
-from click_auto_help import AHGroup
+# from click_auto_help import AHGroup
 from clicktool import click_add_options
 from clicktool import click_global_options
 from clicktool import tv
@@ -59,11 +59,10 @@ def touch_if_new(path: Path):
 def cli(
     ctx,
     proxy: bool,
-    verbose: bool | int | float,
     verbose_inf: bool,
     dict_output: bool,
+    verbose: bool | int | float = False,
 ):
-
     tty, verbose = tv(
         ctx=ctx,
         verbose=verbose,
@@ -335,8 +334,3 @@ def cli(
     # sudo su postgres -c "psql template1 -c 'create extension hstore;'"
     # sudo su postgres -c "psql -U postgres -c 'create extension adminpack;'" #makes pgadmin happy
     ##sudo su postgres -c "psql template1 -c 'create extension uint;'"
-
-
-# if __name__ == "__main__":
-#    # pylint: disable=E1120
-#    cli()

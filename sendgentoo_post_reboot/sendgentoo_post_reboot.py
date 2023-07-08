@@ -28,7 +28,6 @@ from pathlib import Path
 
 import click
 import sh
-# from click_auto_help import AHGroup
 from clicktool import click_add_options
 from clicktool import click_global_options
 from clicktool import tv

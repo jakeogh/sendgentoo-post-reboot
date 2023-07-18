@@ -140,7 +140,7 @@ def cli(
     install("app-misc/echocommand")
     # install('net-dns/dnsgate')
     install(
-        "app-misc/edittool",
+        "dev-python/edittool",
         force=True,
     )
     install("net-fs/nfs-utils")

@@ -274,6 +274,7 @@ def cli(
     # sudo su postgres -c "psql template1 -c 'create extension ltree;'"
     install("sys-apps/sshd-configurator")
     # emerge --depclean  # unmerges partial emerges, do this after install is known good
+    syscmd("perl-cleaner --reallyall")
     install("@laptopbase")  # https://dev.gentoo.org/~zmedico/portage/doc/ch02.html
     install("@wwwsurf")
     install("@webcam")

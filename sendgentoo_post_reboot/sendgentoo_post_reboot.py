@@ -117,6 +117,8 @@ def cli(
     syscmd("symlinktree /home/cfg/sysskel --verbose-inf --re-apply-skel /root")
 
     syscmd("/etc/init.d/dnscrypt-proxy start")
+    if not Path("/etc/portage/proxy.conf").exists():
+        sh.touch("/etc/portage/proxy.conf")
     syscmd("emaint sync -A")
 
     install("dev-util/debugedit")

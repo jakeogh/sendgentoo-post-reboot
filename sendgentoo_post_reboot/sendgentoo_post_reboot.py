@@ -275,6 +275,7 @@ def cli(
     install("sys-apps/sshd-configurator")
     # emerge --depclean  # unmerges partial emerges, do this after install is known good
     syscmd("perl-cleaner --reallyall")
+    syscmd("emerge -vuDU @world")
     install("@laptopbase")  # https://dev.gentoo.org/~zmedico/portage/doc/ch02.html
     install("@wwwsurf")
     install("@webcam")

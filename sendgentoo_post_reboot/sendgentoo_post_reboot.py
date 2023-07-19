@@ -98,10 +98,10 @@ def cli(
     syscmd("emerge --sync")
     syscmd("eselect news read all")
 
-    install("app-misc/tmux", verbose=False)
-    install("app-admin/sudo", verbose=False)
+    install("app-misc/tmux")
+    install("app-admin/sudo")
 
-    in_tmux(verbose=False)
+    in_tmux()
 
     install("sys-apps/portage")
     install("net-misc/unison")
@@ -133,7 +133,6 @@ def cli(
         path=Path("/etc/portage/cpuflags.conf"),
         unique=True,
         line=f'CPU_FLAGS_X86="{flags}"\n',
-        verbose=False,
     )
 
     install("app-misc/dodo")
@@ -151,7 +150,6 @@ def cli(
     write_line_to_file(
         line=f'MACHINE_SIG="{machine_sig}"\n',
         path=Path("/etc/env.d/99machine_sig"),
-        verbose=False,
         unique=True,
     )
 
@@ -267,7 +265,7 @@ def cli(
     syscmd("eix-update")
 
     install("dev-db/postgresql")
-    pg_version = get_latest_postgresql_version(verbose=False)
+    pg_version = get_latest_postgresql_version()
     syscmd(f"rc-update add postgresql-{pg_version} default")
     # syscmd(f'emerge --config dev-db/postgresql:{pg_version}')  # ok to fail if already conf
     # sudo su postgres -c "psql template1 -c 'create extension hstore;'"

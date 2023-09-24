@@ -2,19 +2,22 @@
 # -*- coding: utf8 -*-
 # tab-width:4
 
+# pylint: disable=useless-suppression             # [I0021]
 # pylint: disable=missing-docstring               # [C0111] docstrings are always outdated and wrong
+# pylint: disable=missing-param-doc               # [W9015]
 # pylint: disable=missing-module-docstring        # [C0114]
-# pylint: disable=fixme                           # [W0511] todo is encouraged
+# pylint: disable=fixme                           # [W0511] todo encouraged
 # pylint: disable=line-too-long                   # [C0301]
 # pylint: disable=too-many-instance-attributes    # [R0902]
 # pylint: disable=too-many-lines                  # [C0302] too many lines in module
-# pylint: disable=invalid-name                    # [C0103] single letter var names, name too descriptive
+# pylint: disable=invalid-name                    # [C0103] single letter var names, name too descriptive(!)
 # pylint: disable=too-many-return-statements      # [R0911]
 # pylint: disable=too-many-branches               # [R0912]
 # pylint: disable=too-many-statements             # [R0915]
 # pylint: disable=too-many-arguments              # [R0913]
 # pylint: disable=too-many-nested-blocks          # [R1702]
 # pylint: disable=too-many-locals                 # [R0914]
+# pylint: disable=too-many-public-methods         # [R0904]
 # pylint: disable=too-few-public-methods          # [R0903]
 # pylint: disable=no-member                       # [E1101] no member for base
 # pylint: disable=attribute-defined-outside-init  # [W0201]
@@ -60,7 +63,7 @@ def cli(
     proxy: bool,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -165,16 +168,17 @@ def cli(
     )  # must be done after /home/user exists
 
     install("media-libs/libmtp")  # creates plugdev group
-    for x in [
+    for x in (
         "cdrom",
         "cdrw",
         "usb",
         "audio",
         "plugdev",
         "video",
+        "render",
         "wheel",
         "dialout",
-    ]:
+    ):
         syscmd(f"gpasswd -a user {x}")
 
     syscmd("/home/cfg/setup/fix_cfg_perms")  # must happen when user exists
@@ -201,11 +205,11 @@ def cli(
     delete_file_and_recreate_empty_immutable("/root/Desktop")
     delete_file_and_recreate_empty_immutable("/root/opt")
 
-    if not Path("/home/user/cfg").exists:
+    if not Path("/home/user/cfg").exists():
         os.symlink("/home/cfg", "/home/user/cfg")
-    if not Path("/home/user/_myapps").exists:
+    if not Path("/home/user/_myapps").exists():
         os.symlink("/home/cfg/_myapps", "/home/user/_myapps")
-    if not Path("/home/user/_repos").exists:
+    if not Path("/home/user/_repos").exists():
         os.symlink("/home/cfg/_repos", "/home/user/_repos")
 
     # /home/cfg/git/configure_git_global

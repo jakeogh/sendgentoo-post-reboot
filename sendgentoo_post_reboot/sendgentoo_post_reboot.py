@@ -31,10 +31,13 @@ from pathlib import Path
 
 import click
 import sh
+from asserttool import ic
+from asserttool import icp
 from clicktool import click_add_options
 from clicktool import click_global_options
-from clicktool import tv
+from clicktool import tvicgvd
 from eprint import eprint
+from globalverbose import gvd
 from pathtool import delete_file_and_recreate_empty_immutable
 from pathtool import write_line_to_file
 from portagetool import get_latest_postgresql_version
@@ -65,10 +68,12 @@ def cli(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
 
     delme = Path("/delme")
@@ -250,7 +255,7 @@ def cli(
     syscmd("/etc/local.d/export_cores.start")
 
     for _l in string.ascii_lowercase:
-        for _n in string.digits[1:4]:
+        for _n in string.digits[1:6]:
             Path(f"/mnt/sd{_l}{_n}").mkdir(exist_ok=True)
 
     for _p in ["loop", "samba", "dvd", "cdrom", "smb"]:

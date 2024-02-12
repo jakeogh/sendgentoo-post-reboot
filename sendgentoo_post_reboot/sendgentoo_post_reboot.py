@@ -114,7 +114,7 @@ def cli(
     install("sys-apps/portage")
     install("net-misc/unison")
 
-    install("sys-devel/libtool")
+    install("dev-build/libtool")  # not sure what for
 
     install("net-dns/dnscrypt-proxy")
     syscmd("rc-update add dnscrypt-proxy default")

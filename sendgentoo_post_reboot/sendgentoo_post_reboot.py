@@ -214,8 +214,8 @@ def cli(
         os.symlink("/home/cfg", "/home/user/cfg")
     if not Path("/home/user/_myapps").exists():
         os.symlink("/home/cfg/_myapps", "/home/user/_myapps")
-    if not Path("/home/user/_repos").exists():
-        os.symlink("/home/cfg/_repos", "/home/user/_repos")
+    # if not Path("/home/user/_repos").exists():
+    #    os.symlink("/home/cfg/_repos", "/home/user/_repos")
 
     # /home/cfg/git/configure_git_global
 

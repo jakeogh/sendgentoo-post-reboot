@@ -76,6 +76,7 @@ def cli(
         gvd=gvd,
     )
 
+    syscmd("dhcpcd eth0")
     delme = Path("/delme")
     delme.mkdir(exist_ok=True)
 

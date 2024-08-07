@@ -149,6 +149,8 @@ def cli(
     install("app-misc/dodo")
     install("app-misc/echocommand")
     # install('net-dns/dnsgate')
+    syscmd("eselect repository enable guru")
+    syscmd("emaint sync -r guru")
     install(
         "dev-python/edittool",
         force=True,

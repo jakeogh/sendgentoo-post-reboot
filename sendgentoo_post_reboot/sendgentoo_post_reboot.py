@@ -214,10 +214,17 @@ def cli(
     delete_file_and_recreate_empty_immutable("/root/Desktop")
     delete_file_and_recreate_empty_immutable("/root/opt")
 
-    if not Path("/home/user/cfg").exists():
-        os.symlink("/home/cfg", "/home/user/cfg")
-    if not Path("/home/user/_myapps").exists():
-        os.symlink("/home/cfg/_myapps", "/home/user/_myapps")
+    try:
+        if not Path("/home/user/cfg").exists():
+            os.symlink("/home/cfg", "/home/user/cfg")
+    except FileExistsError:
+        pass
+
+    try:
+        if not Path("/home/user/_myapps").exists():
+            os.symlink("/home/cfg/_myapps", "/home/user/_myapps")
+    except FileExistsError:
+        pass
     # if not Path("/home/user/_repos").exists():
     #    os.symlink("/home/cfg/_repos", "/home/user/_repos")
 

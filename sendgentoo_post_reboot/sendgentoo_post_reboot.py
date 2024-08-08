@@ -157,7 +157,7 @@ def cli(
     )
     install("net-fs/nfs-utils")
 
-    install("sys-apps/machinesignaturetool")
+    install("sys-apps/machinesignaturetool", force=True)
     machine_sig_command = sh.Command("machinesignaturetool")
     machine_sig = machine_sig_command().strip()
 

@@ -300,7 +300,7 @@ def cli(
     # install("@wwwsurf")
     # install("@webcam")
 
-    install("@print")
+    # install("@print")
     syscmd("gpasswd -a root lp")
     syscmd("gpasswd -a user lp")
     syscmd("gpasswd -a root lpadmin")
@@ -334,14 +334,14 @@ def cli(
     syscmd("chown root:mail /var/spool/mail/")  # invalid group
     syscmd("chmod 03775 /var/spool/mail/")
 
-    install("@gpib")
-    syscmd("gpasswd -a user gpib")
+    # install("@gpib")
+    # syscmd("gpasswd -a user gpib")
 
-    # eselect repository enable science
-    # emaint sync -r science
-    # emerge @gpib -pv
-    # emerge @gpib
-    # gpib_config
+    ## eselect repository enable science
+    ## emaint sync -r science
+    ## emerge @gpib -pv
+    ## emerge @gpib
+    ## gpib_config
 
     install("app-editors/neovim")
     syscmd("emerge --unmerge vim")

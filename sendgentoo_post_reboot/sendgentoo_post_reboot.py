@@ -255,8 +255,8 @@ def cli(
     # emerge --sync
     # eselect profile list
 
-    Path("/etc/local.d/export_cores.start").chmod(0o755)
-    syscmd("/etc/local.d/export_cores.start")
+    # Path("/etc/local.d/export_cores.start").chmod(0o755)
+    # syscmd("/etc/local.d/export_cores.start")
 
     for _l in string.ascii_lowercase:
         for _n in string.digits[1:6]:
@@ -290,8 +290,8 @@ def cli(
     syscmd("perl-cleaner --reallyall")
     syscmd("emerge -vuDU @world")
     install("@laptopbase")  # https://dev.gentoo.org/~zmedico/portage/doc/ch02.html
-    install("@wwwsurf")
-    install("@webcam")
+    # install("@wwwsurf")
+    # install("@webcam")
 
     install("@print")
     syscmd("gpasswd -a root lp")

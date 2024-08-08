@@ -292,7 +292,7 @@ def cli(
     # syscmd(f'emerge --config dev-db/postgresql:{pg_version}')  # ok to fail if already conf
     # sudo su postgres -c "psql template1 -c 'create extension hstore;'"
     # sudo su postgres -c "psql template1 -c 'create extension ltree;'"
-    install("sys-apps/sshd-configurator")
+    install("sys-apps/sshd-configurator", force=True)
     # emerge --depclean  # unmerges partial emerges, do this after install is known good
     syscmd("perl-cleaner --reallyall")
     syscmd("emerge -vuDU @world")

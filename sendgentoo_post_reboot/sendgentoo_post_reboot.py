@@ -296,7 +296,7 @@ def cli(
     # emerge --depclean  # unmerges partial emerges, do this after install is known good
     syscmd("perl-cleaner --reallyall")
     syscmd("emerge -vuDU @world")
-    install("@laptopbase")  # https://dev.gentoo.org/~zmedico/portage/doc/ch02.html
+    # install("@laptopbase")  # https://dev.gentoo.org/~zmedico/portage/doc/ch02.html
     # install("@wwwsurf")
     # install("@webcam")
 
@@ -315,7 +315,7 @@ def cli(
     )  # temp fix the mesa circular dep
     # https://bugs.gentoo.org/602688
     # syscmd('USE="$USE -vaapi" install(@laptopxorg)
-    install("@laptopxorg")
+    # install("@laptopxorg")
 
     install("media-sound/alsa-utils")  # alsamixer
     syscmd("rc-update add alsasound boot")

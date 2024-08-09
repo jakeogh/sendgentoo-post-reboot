@@ -307,12 +307,12 @@ def cli(
     syscmd("gpasswd -a user lpadmin")
 
     # lspci | grep -i nvidia | grep -i vga && install(sys-firmware/nvidia-firmware #make sure this is after installing sys-apps/pciutils
-    install(
-        "sys-firmware/nvidia-firmware"
-    )  # make sure this is after installing sys-apps/pciutils
-    syscmd(
-        'USE="-opengl -utils" emerge -v1 mesa x11-libs/libva'
-    )  # temp fix the mesa circular dep
+    # install(
+    #    "sys-firmware/nvidia-firmware"
+    # )  # make sure this is after installing sys-apps/pciutils
+    # syscmd(
+    #    'USE="-opengl -utils" emerge -v1 mesa x11-libs/libva'
+    # )  # temp fix the mesa circular dep
     # https://bugs.gentoo.org/602688
     # syscmd('USE="$USE -vaapi" install(@laptopxorg)
     # install("@laptopxorg")
@@ -322,14 +322,14 @@ def cli(
     install("media-plugins/alsaequal")
     install("media-sound/alsa-tools")
 
-    if Path("/usr/src/linux/.git").is_dir():
-        kernel_version_command = sh.Command("git")
-        kernel_version_command = kernel_version_command.bake(
-            "-C", "/usr/src/linux", "describe", "--always", "--tag"
-        )
-        kernel_version = kernel_version_command()
-    else:
-        kernel_version = Path("/usr/src/linux").resolve().name.split("linux-")[1]
+    # if Path("/usr/src/linux/.git").is_dir():
+    #    kernel_version_command = sh.Command("git")
+    #    kernel_version_command = kernel_version_command.bake(
+    #        "-C", "/usr/src/linux", "describe", "--always", "--tag"
+    #    )
+    #    kernel_version = kernel_version_command()
+    # else:
+    #    kernel_version = Path("/usr/src/linux").resolve().name.split("linux-")[1]
 
     syscmd("chown root:mail /var/spool/mail/")  # invalid group
     syscmd("chmod 03775 /var/spool/mail/")

@@ -148,6 +148,7 @@ def cli(
 
     install("app-misc/dodo")
     install("app-misc/echocommand")
+    install("app-misc/context-color")
     # install('net-dns/dnsgate')
     syscmd("eselect repository enable guru")
     syscmd("emaint sync -r guru")

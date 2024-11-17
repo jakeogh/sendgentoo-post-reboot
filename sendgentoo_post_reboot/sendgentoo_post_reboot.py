@@ -150,14 +150,16 @@ def cli(
     install("app-misc/echocommand")
     install("app-misc/context-color")
     # install('net-dns/dnsgate')
+    #
+    install("app-eselect/eselect-repository")
     syscmd("eselect repository enable guru")
     syscmd("emaint sync -r guru")
+
     install(
         "dev-python/edittool",
         force=True,
     )
     install("net-fs/nfs-utils")
-
     install("sys-apps/machinesignaturetool", force=True)
     machine_sig_command = sh.Command("machinesignaturetool")
     machine_sig = machine_sig_command().strip()

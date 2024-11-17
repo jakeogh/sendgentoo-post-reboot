@@ -131,7 +131,6 @@ def cli(
     syscmd("emaint sync -A")
 
     install("dev-util/debugedit")
-    # emerge @world --newuse
 
     syscmd("test -h /root/cfg     || { ln -s /home/cfg /root/cfg             ; }")
     syscmd("test -h /root/_myapps || { ln -s /home/cfg/_myapps /root/_myapps ; }")

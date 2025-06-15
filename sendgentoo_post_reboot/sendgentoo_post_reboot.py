@@ -147,7 +147,7 @@ def cli(
 
     install("app-misc/dodo")
     install("app-misc/echocommand")
-    install("app-misc/context-color")
+    install("app-misc/context-color", force=True)
     # install('net-dns/dnsgate')
     #
     install("app-eselect/eselect-repository")

@@ -136,14 +136,8 @@ def cli(
     syscmd("test -h /root/_myapps || { ln -s /home/cfg/_myapps /root/_myapps ; }")
     syscmd("test -h /root/_repos  || { ln -s /home/cfg/_repos /root/_repos   ; }")
 
-    install("app-portage/cpuid2cpuflags")
-    flags = sh.cpuid2cpuflags().split(":")[1].strip()
-    # echo CPU_FLAGS_X86=$(echo \"$(echo "$(cpuid2cpuflags)" | cut -d ":" -f 2 | sed 's/^[ \t]*//')\") > /etc/portage/cpuflags.conf
-    write_line_to_file(
-        path=Path("/etc/portage/cpuflags.conf"),
-        unique=True,
-        line=f'CPU_FLAGS_X86="{flags}"\n',
-    )
+    # might be done already
+    install("sys-apps/portage-set-cpu-flags-on-boot")
 
     install("app-misc/dodo")
     install("app-misc/echocommand")

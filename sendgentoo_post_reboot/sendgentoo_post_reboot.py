@@ -90,7 +90,7 @@ def cli(
     if not Path("/etc/portage/emerge_default_opts.conf").exists():
         syscmd("bash -c /home/cfg/sysskel/etc/local.d/emerge_default_opts.start")
 
-    touch_if_new(Path("/etc/portage/cpuflags.conf"))
+    touch_if_new(Path("/etc/portage/cpu_flags.conf"))
     # todo
     if proxy:
         touch_if_new(Path("/etc/portage/proxy.conf"))
@@ -136,8 +136,8 @@ def cli(
     syscmd("test -h /root/_myapps || { ln -s /home/cfg/_myapps /root/_myapps ; }")
     syscmd("test -h /root/_repos  || { ln -s /home/cfg/_repos /root/_repos   ; }")
 
-    # might be done already
-    install("sys-apps/portage-set-cpu-flags-on-boot")
+    # done already
+    # install("sys-apps/portage-set-cpu-flags-on-boot")
 
     install("app-misc/dodo")
     install("app-misc/echocommand")

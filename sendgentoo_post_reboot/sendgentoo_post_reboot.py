@@ -42,6 +42,7 @@ from pathtool import delete_file_and_recreate_empty_immutable
 from pathtool import write_line_to_file
 from portagetool import get_latest_postgresql_version
 from portagetool import install
+from portagetool import set_use_flag_for_package
 from proxytool import add_proxy_to_enviroment
 from tmuxtool import in_tmux
 
@@ -148,6 +149,7 @@ def cli(
     syscmd("eselect repository enable guru")
     syscmd("emaint sync -r guru")
 
+    set_use_flag_for_package(package="dev-python/dulwich", flag="-native-extensions")
     install(
         "dev-python/edittool",
         force=True,
@@ -317,16 +319,6 @@ def cli(
     syscmd("rc-update add alsasound boot")
     install("media-plugins/alsaequal")
     install("media-sound/alsa-tools")
-
-    # if Path("/usr/src/linux/.git").is_dir():
-    #    kernel_version_command = sh.Command("git")
-    #    kernel_version_command = kernel_version_command.bake(
-    #        "-C", "/usr/src/linux", "describe", "--always", "--tag"
-    #    )
-    #    kernel_version = kernel_version_command()
-    # else:
-    #    kernel_version = Path("/usr/src/linux").resolve().name.split("linux-")[1]
-
     syscmd("chown root:mail /var/spool/mail/")  # invalid group
     syscmd("chmod 03775 /var/spool/mail/")
 

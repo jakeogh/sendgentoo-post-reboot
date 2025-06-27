@@ -331,6 +331,7 @@ def cli(
     ## emerge @gpib
     ## gpib_config
 
+    install("dev-python/zfstool")
     install("app-editors/neovim")
     syscmd("emerge --unmerge vim")
 

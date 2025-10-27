@@ -2,26 +2,6 @@
 # -*- coding: utf8 -*-
 # tab-width:4
 
-# pylint: disable=useless-suppression             # [I0021]
-# pylint: disable=missing-docstring               # [C0111] docstrings are always outdated and wrong
-# pylint: disable=missing-param-doc               # [W9015]
-# pylint: disable=missing-module-docstring        # [C0114]
-# pylint: disable=fixme                           # [W0511] todo encouraged
-# pylint: disable=line-too-long                   # [C0301]
-# pylint: disable=too-many-instance-attributes    # [R0902]
-# pylint: disable=too-many-lines                  # [C0302] too many lines in module
-# pylint: disable=invalid-name                    # [C0103] single letter var names, name too descriptive(!)
-# pylint: disable=too-many-return-statements      # [R0911]
-# pylint: disable=too-many-branches               # [R0912]
-# pylint: disable=too-many-statements             # [R0915]
-# pylint: disable=too-many-arguments              # [R0913]
-# pylint: disable=too-many-nested-blocks          # [R1702]
-# pylint: disable=too-many-locals                 # [R0914]
-# pylint: disable=too-many-public-methods         # [R0904]
-# pylint: disable=too-few-public-methods          # [R0903]
-# pylint: disable=no-member                       # [E1101] no member for base
-# pylint: disable=attribute-defined-outside-init  # [W0201]
-# pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
 from __future__ import annotations
 
 import os
@@ -32,14 +12,13 @@ from pathlib import Path
 import click
 import sh
 from asserttool import ic
-from asserttool import icp
 from clicktool import click_add_options
 from clicktool import click_global_options
 from clicktool import tvicgvd
 from eprint import eprint
+from filetool import ensure_line_in_config_file
 from globalverbose import gvd
 from pathtool import delete_file_and_recreate_empty_immutable
-from pathtool import write_line_to_file
 from portagetool import get_latest_postgresql_version
 from portagetool import install
 from portagetool import set_use_flag_for_package
@@ -96,11 +75,11 @@ def cli(
     if proxy:
         touch_if_new(Path("/etc/portage/proxy.conf"))
 
-        write_line_to_file(
+        ensure_line_in_config_file(
             path=Path("/etc/portage/make.conf"),
             line="source /etc/portage/proxy.conf\n",
-            unique=True,
-            verbose=False,
+            ignore_leading_whitespace=False,
+            comment_marker="#",
         )
 
         add_proxy_to_enviroment()
@@ -159,10 +138,11 @@ def cli(
     machine_sig_command = sh.Command("machinesignaturetool")
     machine_sig = machine_sig_command().strip()
 
-    write_line_to_file(
+    ensure_line_in_config_file(
         line=f'MACHINE_SIG="{machine_sig}"\n',
         path=Path("/etc/env.d/99machine_sig"),
-        unique=True,
+        ignore_leading_whitespace=False,
+        comment_marker="#",
     )
 
     # must be done after symlinktree so etc/skel gets populated

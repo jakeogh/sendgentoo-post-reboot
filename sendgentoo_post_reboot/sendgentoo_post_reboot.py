@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 import click
-import sh
+import hs
 from asserttool import ic
 from clicktool import click_add_options
 from clicktool import click_global_options
@@ -107,7 +107,7 @@ def cli(
 
     syscmd("/etc/init.d/dnscrypt-proxy start")
     if not Path("/etc/portage/proxy.conf").exists():
-        sh.touch("/etc/portage/proxy.conf")
+        hs.Command("touch")("/etc/portage/proxy.conf")
     syscmd("emaint sync -A")
 
     install("dev-util/debugedit")
@@ -135,7 +135,7 @@ def cli(
     )
     install("net-fs/nfs-utils")
     install("sys-apps/machinesignaturetool", force=True)
-    machine_sig_command = sh.Command("machinesignaturetool")
+    machine_sig_command = hs.Command("machinesignaturetool")
     machine_sig = machine_sig_command().strip()
 
     ensure_line_in_config_file(

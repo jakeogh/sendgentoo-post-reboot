@@ -139,7 +139,7 @@ def cli(
     machine_sig_command = hs.Command("machinesignaturetool")
     machine_sig = machine_sig_command().strip()
 
-    icp(macching_sig)
+    icp(machine_sig)
     ensure_line_in_config_file(
         line=f'MACHINE_SIG="{machine_sig}"',
         path=Path("/etc/env.d/99machine_sig"),

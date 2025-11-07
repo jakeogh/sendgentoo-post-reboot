@@ -12,6 +12,7 @@ from pathlib import Path
 import click
 import hs
 from asserttool import ic
+from asserttool import icp
 from clicktool import click_add_options
 from clicktool import click_global_options
 from clicktool import tvicgvd
@@ -77,7 +78,7 @@ def cli(
 
         ensure_line_in_config_file(
             path=Path("/etc/portage/make.conf"),
-            line="source /etc/portage/proxy.conf\n",
+            line="source /etc/portage/proxy.conf",
             ignore_leading_whitespace=False,
             comment_marker="#",
         )
@@ -138,8 +139,9 @@ def cli(
     machine_sig_command = hs.Command("machinesignaturetool")
     machine_sig = machine_sig_command().strip()
 
+    icp(macching_sig)
     ensure_line_in_config_file(
-        line=f'MACHINE_SIG="{machine_sig}"\n',
+        line=f'MACHINE_SIG="{machine_sig}"',
         path=Path("/etc/env.d/99machine_sig"),
         ignore_leading_whitespace=False,
         comment_marker="#",

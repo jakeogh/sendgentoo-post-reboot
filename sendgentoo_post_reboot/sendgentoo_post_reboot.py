@@ -76,7 +76,6 @@ def cli(
             "/etc/local.d/portage_set_emerge_default_opts.start",
         )
 
-    touch_if_new(Path("/etc/portage/cpu_flags.conf"))
     if proxy:
         touch_if_new(Path("/etc/portage/proxy.conf"))
 

@@ -68,6 +68,14 @@ def cli(
         if e.errno != errno.ENOTEMPTY:
             raise
 
+    # installed by portage-set-emerge-default-opts-on-boot during the chroot
+    # phase; run it now so this run's emerges use the options
+    if not Path("/etc/portage/emerge_default_opts.conf").exists():
+        _run(
+            hs.Command("bash"),
+            "/etc/local.d/portage_set_emerge_default_opts.start",
+        )
+
     touch_if_new(Path("/etc/portage/cpu_flags.conf"))
     if proxy:
         touch_if_new(Path("/etc/portage/proxy.conf"))

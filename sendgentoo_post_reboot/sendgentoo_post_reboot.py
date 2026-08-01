@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import errno
-import os
 import string
 import sys
 from pathlib import Path
@@ -26,7 +25,6 @@ from tmuxtool import in_tmux
 _emerge = hs.Command("emerge")
 _rc_update = hs.Command("rc-update")
 _gpasswd = hs.Command("gpasswd")
-_symlinktree = hs.Command("symlinktree")
 
 
 def _run(command: hs.Command, *args: str, **kwargs) -> None:
@@ -38,14 +36,6 @@ def touch_if_new(path: Path) -> None:
     path = Path(path)
     if not path.exists():  # race
         path.touch()
-
-
-def _ensure_symlink(*, target: str, link: str) -> None:
-    try:
-        if not Path(link).exists():
-            os.symlink(target, link)
-    except FileExistsError:
-        pass
 
 
 @click.command()
@@ -78,12 +68,6 @@ def cli(
         if e.errno != errno.ENOTEMPTY:
             raise
 
-    if not Path("/etc/portage/emerge_default_opts.conf").exists():
-        _run(
-            hs.Command("bash"),
-            "/home/cfg/sysskel/etc/local.d/emerge_default_opts.start",
-        )
-
     touch_if_new(Path("/etc/portage/cpu_flags.conf"))
     if proxy:
         touch_if_new(Path("/etc/portage/proxy.conf"))
@@ -113,20 +97,11 @@ def cli(
     install("net-dns/dnscrypt-proxy")
     _run(_rc_update, "add", "dnscrypt-proxy", "default")
 
-    install("dev-python/symlinktree", force=True)
-    os.environ["LANG"] = "en_US.UTF8"  # to make click happy
-    _run(_symlinktree, "/home/cfg/sysskel", "--verbose-inf")
-    _run(_symlinktree, "/home/cfg/sysskel", "--verbose-inf", "--re-apply-skel", "/root")
-
     _run(hs.Command("/etc/init.d/dnscrypt-proxy"), "start")
     touch_if_new(Path("/etc/portage/proxy.conf"))
     _run(hs.Command("emaint"), "sync", "-A")
 
     install("dev-util/debugedit")
-
-    _ensure_symlink(target="/home/cfg", link="/root/cfg")
-    _ensure_symlink(target="/home/cfg/_myapps", link="/root/_myapps")
-    _ensure_symlink(target="/home/cfg/_repos", link="/root/_repos")
 
     install("app-misc/dodo")
     install("app-misc/echocommand")
@@ -154,20 +129,10 @@ def cli(
         comment_marker="#",
     )
 
-    # must be done after symlinktree so etc/skel gets populated
     if not Path("/home/user").is_dir():
         _run(hs.Command("useradd"), "--create-home", "user")
 
     _run(hs.Command("passwd"), "-d", "user")
-    # must be done after /home/user exists
-    _run(
-        _symlinktree,
-        "/home/cfg/sysskel",
-        "--verbose-inf",
-        "--re-apply-skel",
-        "/home/user",
-    )
-
     install("media-libs/libmtp")  # creates plugdev group
     for _group in (
         "cdrom",
@@ -181,8 +146,6 @@ def cli(
         "dialout",
     ):
         _run(_gpasswd, "-a", "user", _group)
-
-    _run(hs.Command("/home/cfg/setup/fix_cfg_perms"))  # must happen when user exists
 
     delete_file_and_recreate_empty_immutable("/home/user/.lesshst")
     delete_file_and_recreate_empty_immutable("/home/user/.vim-session")
@@ -205,9 +168,6 @@ def cli(
     delete_file_and_recreate_empty_immutable("/root/.python_history")
     delete_file_and_recreate_empty_immutable("/root/Desktop")
     delete_file_and_recreate_empty_immutable("/root/opt")
-
-    _ensure_symlink(target="/home/cfg", link="/home/user/cfg")
-    _ensure_symlink(target="/home/cfg/_myapps", link="/home/user/_myapps")
 
     install("dev-vcs/git")  # need this for any -9999 packages (zfs)
 

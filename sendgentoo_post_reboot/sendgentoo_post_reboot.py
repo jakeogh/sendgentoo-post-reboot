@@ -27,9 +27,18 @@ _rc_update = hs.Command("rc-update")
 _gpasswd = hs.Command("gpasswd")
 
 
-def _run(command: hs.Command, *args: str, **kwargs) -> None:
+def _run(
+    command: hs.Command,
+    *args: str,
+    **kwargs,
+) -> None:
     eprint(command, *args)
-    command(*args, _out=sys.stdout, _err=sys.stderr, **kwargs)
+    command(
+        *args,
+        _out=sys.stdout,
+        _err=sys.stderr,
+        **kwargs,
+    )
 
 
 def touch_if_new(path: Path) -> None:
@@ -89,7 +98,12 @@ def cli(
         add_proxy_to_environment()
 
     _run(_emerge, "--sync")
-    _run(hs.Command("eselect"), "news", "read", "all")
+    _run(
+        hs.Command("eselect"),
+        "news",
+        "read",
+        "all",
+    )
 
     install("app-misc/tmux")
     install("app-admin/sudo")
@@ -102,7 +116,12 @@ def cli(
     install("dev-build/libtool")  # not sure what for
 
     install("net-dns/dnscrypt-proxy")
-    _run(_rc_update, "add", "dnscrypt-proxy", "default")
+    _run(
+        _rc_update,
+        "add",
+        "dnscrypt-proxy",
+        "default",
+    )
 
     _run(hs.Command("/etc/init.d/dnscrypt-proxy"), "start")
     touch_if_new(Path("/etc/portage/proxy.conf"))
@@ -115,8 +134,18 @@ def cli(
     install("app-misc/context-color", force=True)
 
     install("app-eselect/eselect-repository")
-    _run(hs.Command("eselect"), "repository", "enable", "guru")
-    _run(hs.Command("emaint"), "sync", "-r", "guru")
+    _run(
+        hs.Command("eselect"),
+        "repository",
+        "enable",
+        "guru",
+    )
+    _run(
+        hs.Command("emaint"),
+        "sync",
+        "-r",
+        "guru",
+    )
 
     set_use_flag_for_package(package="dev-python/dulwich", flag="-native-extensions")
     install(
@@ -152,7 +181,12 @@ def cli(
         "wheel",
         "dialout",
     ):
-        _run(_gpasswd, "-a", "user", _group)
+        _run(
+            _gpasswd,
+            "-a",
+            "user",
+            _group,
+        )
 
     delete_file_and_recreate_empty_immutable("/home/user/.lesshst")
     delete_file_and_recreate_empty_immutable("/home/user/.vim-session")
@@ -185,7 +219,12 @@ def cli(
     for _p in ["loop", "samba", "dvd", "cdrom", "smb"]:
         Path(f"/mnt/{_p}").mkdir(exist_ok=True)
 
-    _run(_rc_update, "add", "netmount", "default")
+    _run(
+        _rc_update,
+        "add",
+        "netmount",
+        "default",
+    )
 
     install("app-portage/eix")
     _run(hs.Command("chown"), "portage:portage", "/var/cache/eix")
@@ -193,21 +232,56 @@ def cli(
 
     install("dev-db/postgresql")
     pg_version = get_latest_postgresql_version()
-    _run(_rc_update, "add", f"postgresql-{pg_version}", "default")
+    _run(
+        _rc_update,
+        "add",
+        f"postgresql-{pg_version}",
+        "default",
+    )
     install("sys-apps/sshd-configurator", force=True)
     _run(hs.Command("perl-cleaner"), "--reallyall")
     _run(_emerge, "-vuDU", "@world")
 
-    _run(_gpasswd, "-a", "root", "lp")
-    _run(_gpasswd, "-a", "user", "lp")
-    _run(_gpasswd, "-a", "root", "lpadmin")
-    _run(_gpasswd, "-a", "user", "lpadmin")
+    _run(
+        _gpasswd,
+        "-a",
+        "root",
+        "lp",
+    )
+    _run(
+        _gpasswd,
+        "-a",
+        "user",
+        "lp",
+    )
+    _run(
+        _gpasswd,
+        "-a",
+        "root",
+        "lpadmin",
+    )
+    _run(
+        _gpasswd,
+        "-a",
+        "user",
+        "lpadmin",
+    )
 
     install("media-sound/alsa-utils")  # alsamixer
-    _run(_rc_update, "add", "alsasound", "boot")
+    _run(
+        _rc_update,
+        "add",
+        "alsasound",
+        "boot",
+    )
     install("media-plugins/alsaequal")
     install("media-sound/alsa-tools")
-    _run(hs.Command("chown"), "root:mail", "/var/spool/mail/", _ok_code=[0, 1])  # mail group may not exist
+    _run(
+        hs.Command("chown"),
+        "root:mail",
+        "/var/spool/mail/",
+        _ok_code=[0, 1],
+    )  # mail group may not exist
     _run(hs.Command("chmod"), "03775", "/var/spool/mail/")
 
     install("dev-python/zfstool")

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sendgentoo-post-reboot"
-version = "1!0.0.1787634072"
+version = "1!0.0.1787634074"
 description = "takes a minimal sendgentoo install to my setup"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },

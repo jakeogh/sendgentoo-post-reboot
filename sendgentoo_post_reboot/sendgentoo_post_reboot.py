@@ -11,10 +11,9 @@ from asserttool import ic
 from asserttool import icp
 from clicktool import click_add_options
 from clicktool import click_global_options
-from clicktool import tvicgvd
+from clicktool import tvic
 from eprint import eprint
 from filetool import ensure_line_in_config_file
-from globalverbose import gvd
 from pathtool import delete_file_and_recreate_empty_immutable
 from portagetool import get_latest_postgresql_version
 from portagetool import install
@@ -58,12 +57,11 @@ def cli(
     dict_output: bool,
     verbose: bool = False,
 ) -> None:
-    tty, verbose = tvicgvd(
+    tty, verbose = tvic(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
         ic=ic,
-        gvd=gvd,
     )
 
     _run(hs.Command("dhcpcd"), "eth0", _ok_code=[0, 1])  # 1: already running

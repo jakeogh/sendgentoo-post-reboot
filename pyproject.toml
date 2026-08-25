@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sendgentoo-post-reboot"
+version = "1!0.0.1787634064"
+description = "takes a minimal sendgentoo install to my setup"
+authors = [
+    { name = "Justin Keogh", email = "github.com@v6y.net" },
+]
+dependencies = [
+    "click",
+    "asserttool @ git+https://github.com/jakeogh/asserttool@4bd23a06c2161e488415acde89c29537e6720cc1",
+    "clicktool @ git+https://github.com/jakeogh/clicktool@4bc98af7590652693aef664af7485acde40688c2",
+    "eprint @ git+https://github.com/jakeogh/eprint@6ee1deca0c24b684eb5093247d6bd22e11f1b057",
+    "filetool @ git+https://github.com/jakeogh/filetool@f972b0b7fe54b4055c2015dbbe26e53593b75359",
+    "hs @ git+https://github.com/jakeogh/hs@b33c88f35cd24e773fea6ca4758193c9e815536d",
+    "pathtool @ git+https://github.com/jakeogh/pathtool@8ad5953a4328e53c4e567de8349b863ebce0e67e",
+    "portagetool @ git+https://github.com/jakeogh/portagetool@b9aa9ee04976463fa1d01ce5a92cbc70e1081ba3",
+    "proxytool @ git+https://github.com/jakeogh/proxytool@ebc008e31ce534eef30e8de159c06a36d0862fed",
+    "tmuxtool @ git+https://github.com/jakeogh/tmuxtool@fb428c66b22ab5741590e0c06f54528efa06c504",
+]
+license = "ISC"
+requires-python = ">=3.12"
+
+[project.urls]
+Homepage = "https://github.com/jakeogh/sendgentoo-post-reboot"
+
+[project.scripts]
+sendgentoo-post-reboot = "sendgentoo_post_reboot.sendgentoo_post_reboot:cli"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+packages = ["sendgentoo_post_reboot"]
+
+[tool.setuptools.package-data]
+sendgentoo_post_reboot = [
+    "py.typed",
+]

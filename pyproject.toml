@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sendgentoo-post-reboot"
-version = "1!0.0.1788850612"
+version = "1!0.0.1789047831"
 description = "takes a minimal sendgentoo install to my setup"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
@@ -19,7 +19,7 @@ dependencies = [
     "pathtool @ git+https://github.com/jakeogh/pathtool@8ad5953a4328e53c4e567de8349b863ebce0e67e",
     "portagetool @ git+https://github.com/jakeogh/portagetool@b9aa9ee04976463fa1d01ce5a92cbc70e1081ba3",
     "proxytool @ git+https://github.com/jakeogh/proxytool@75ae95bd47ffb30370796776d1d4cbfe90088704",
-    "tmuxtool @ git+https://github.com/jakeogh/tmuxtool@b20aa718e7bdcab6aa41f5e0dcba771fedfcb65e",
+    "tmuxtool @ git+https://github.com/jakeogh/tmuxtool@d8d91bddce2842c3da0d37c3f6c15dcd5f9ca4d9",
 ]
 license = "ISC"
 requires-python = ">=3.12"
